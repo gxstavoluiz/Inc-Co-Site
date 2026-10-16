@@ -54,6 +54,10 @@ test('gallery arrows, project dialog, filters and keyboard navigation work toget
   await page.locator('.project-viewport').focus();
   await page.keyboard.press('End');
   await expect(page.locator('.project-counter')).toHaveText('07 / 07');
+  await page.getByRole('button', { name: 'Público', exact: true }).click();
+  await expect(page.locator('.project:visible')).toHaveCount(2);
+  await expect(page.locator('.project-counter')).toHaveText('01 / 02');
+  await expect.poll(() => page.locator('.projects-pin').evaluate(el => Math.abs(el.getBoundingClientRect().top))).toBeLessThan(2);
 });
 
 test('hero reacts to pointer with real liquid displacement then settles', async ({ page }) => {

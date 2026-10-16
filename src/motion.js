@@ -24,6 +24,7 @@ export function initMotion() {
   let activeIndex = 0;
   let measureFrame = 0;
   let scrollFrame = 0;
+  let filterChanged = false;
 
   function playEntrance(element, delay = 0) {
     if (!enabled || typeof element.animate !== 'function') return;
@@ -67,6 +68,8 @@ export function initMotion() {
   function measureGallery() {
     measureFrame = 0;
     const oldPinned = pinned;
+    const pinBounds = pin.getBoundingClientRect();
+    const galleryVisible = pinBounds.top < window.innerHeight && pinBounds.bottom > 0;
     const oldProgress = progress;
     const wasInside = oldPinned && window.scrollY >= sectionTop && window.scrollY <= sectionTop + travel;
     section.classList.remove('is-pinned');
@@ -81,7 +84,11 @@ export function initMotion() {
     section.style.setProperty('--gallery-height', `${pinHeight + travel}px`);
     if (pinned) viewport.scrollLeft = 0;
     else if (oldPinned) viewport.scrollLeft = oldProgress * travel;
-    if (wasInside && !pinned) window.scrollTo({ top: sectionTop, behavior: 'instant' });
+    if (filterChanged) {
+      viewport.scrollLeft = 0;
+      if (galleryVisible && (oldPinned || pinned)) window.scrollTo({ top: sectionTop, behavior: 'instant' });
+      filterChanged = false;
+    } else if (wasInside && !pinned) window.scrollTo({ top: sectionTop, behavior: 'instant' });
     hint.textContent = pinned ? 'ROLE PARA EXPLORAR →' : 'DESLIZE OU USE AS SETAS →';
     updateGallery();
   }
@@ -112,7 +119,7 @@ export function initMotion() {
     if (event.target.matches(':focus-visible')) goTo(index, 'instant');
   });
   viewport.addEventListener('scroll', () => { if (!pinned) updateGallery(); }, { passive: true });
-  new MutationObserver(scheduleMeasure).observe(track, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
+  new MutationObserver(() => { filterChanged = true; scheduleMeasure(); }).observe(track, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
   new ResizeObserver(scheduleMeasure).observe(pin);
   window.addEventListener('resize', scheduleMeasure, { passive: true });
   document.querySelectorAll('.service-list details').forEach(detail => detail.addEventListener('toggle', scheduleMeasure));
