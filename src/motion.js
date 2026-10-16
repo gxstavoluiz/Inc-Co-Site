@@ -25,6 +25,35 @@ export function initMotion() {
   let measureFrame = 0;
   let scrollFrame = 0;
   let filterChanged = false;
+  const heroStage = document.querySelector('.hero-stage');
+  const heroSurface = heroStage.querySelector('.hero-surface');
+  let heroTop = 0;
+  let heroTravel = 1;
+  let heroPinned = false;
+  let lastHeroProgress = -1;
+
+  function updateHero() {
+    const progress = enabled ? clamp((window.scrollY - heroTop) / heroTravel) : 0;
+    if (progress === lastHeroProgress) return;
+    lastHeroProgress = progress;
+    // Scroll-linked and reversible: the entire opening panel recedes together.
+    const eased = progress * progress * (3 - 2 * progress);
+    heroSurface.style.setProperty('--hero-scale', String(1 - eased * (heroPinned ? .18 : .06)));
+    heroSurface.style.setProperty('--hero-radius', `${eased * (heroPinned ? 36 : 20)}px`);
+    heroSurface.style.setProperty('--hero-edge', String(eased));
+  }
+
+  function measureHero() {
+    // Measure the untransformed stage, never the shrinking surface's bounds.
+    heroTop = heroStage.getBoundingClientRect().top + window.scrollY;
+    const height = heroSurface.offsetHeight;
+    heroPinned = enabled && desktop.matches && height <= window.innerHeight;
+    heroTravel = heroPinned ? clamp(window.innerHeight * .65, 320, 640) : height * .75;
+    heroStage.classList.toggle('is-pinned', heroPinned);
+    heroStage.style.setProperty('--hero-height', `${height + heroTravel}px`);
+    lastHeroProgress = -1;
+    updateHero();
+  }
 
   function playEntrance(element, delay = 0) {
     if (!enabled || typeof element.animate !== 'function') return;
@@ -67,6 +96,7 @@ export function initMotion() {
 
   function measureGallery() {
     measureFrame = 0;
+    measureHero();
     const oldPinned = pinned;
     const pinBounds = pin.getBoundingClientRect();
     const galleryVisible = pinBounds.top < window.innerHeight && pinBounds.bottom > 0;
@@ -121,6 +151,7 @@ export function initMotion() {
   viewport.addEventListener('scroll', () => { if (!pinned) updateGallery(); }, { passive: true });
   new MutationObserver(() => { filterChanged = true; scheduleMeasure(); }).observe(track, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
   new ResizeObserver(scheduleMeasure).observe(pin);
+  new ResizeObserver(scheduleMeasure).observe(heroSurface);
   window.addEventListener('resize', scheduleMeasure, { passive: true });
   document.querySelectorAll('.service-list details').forEach(detail => detail.addEventListener('toggle', scheduleMeasure));
   document.fonts.ready.then(scheduleMeasure);
@@ -197,10 +228,11 @@ export function initMotion() {
   let previousY = window.scrollY;
   function updateScroll() {
     scrollFrame = 0;
+    updateHero();
     updateGallery();
     if (artVisible && enabled) {
       const speed = Math.min(Math.abs(window.scrollY - previousY) / 500, .25);
-      targetScale = 1 + clamp(window.scrollY / 900) * .16;
+      targetScale = 1 + clamp((window.scrollY - heroTop) / heroTravel) * .04;
       wakeLiquid(speed);
     }
     previousY = window.scrollY;
@@ -219,6 +251,7 @@ export function initMotion() {
       for (const animation of animations) animation.cancel();
       stopLiquid();
     }
+    updateHero();
     scheduleMeasure();
   }
   toggle.addEventListener('click', () => {

@@ -17,6 +17,52 @@ async function jump(page, top) {
   await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), top);
 }
 
+async function heroScale(page) {
+  return page.locator('.hero-surface').evaluate(el => el.getBoundingClientRect().width / el.offsetWidth);
+}
+
+test('whole hero shrinks while pinned, reverses and releases into the next section', async ({ page }) => {
+  await openSite(page);
+  const stage = page.locator('.hero-stage');
+  await expect(stage).toHaveClass(/is-pinned/);
+  expect(await heroScale(page)).toBeCloseTo(1, 2);
+  const bounds = await stage.evaluate(el => ({
+    top: el.getBoundingClientRect().top + scrollY,
+    travel: el.offsetHeight - el.firstElementChild.offsetHeight,
+    height: el.offsetHeight,
+  }));
+  await jump(page, bounds.top + bounds.travel / 2);
+  await expect.poll(() => heroScale(page)).toBeCloseTo(.91, 2);
+  await expect(page.getByRole('heading', { level: 1 })).toBeInViewport();
+  await jump(page, bounds.top + bounds.travel);
+  await expect.poll(() => heroScale(page)).toBeCloseTo(.82, 2);
+  await expect(page.locator('.hero-surface')).toHaveCSS('border-radius', '36px');
+  await jump(page, bounds.top + bounds.height);
+  await expect(page.locator('.hero-surface')).not.toBeInViewport();
+  await expect(page.locator('#sobre')).toBeInViewport();
+  await jump(page, 0);
+  await expect.poll(() => heroScale(page)).toBeCloseTo(1, 2);
+  await page.locator('.hero-actions .button').click();
+  await expect(page.locator('#contato')).toBeInViewport();
+});
+
+test('mobile hero shrinks gently without pinning and preserves the menu and anchor links', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openSite(page);
+  await expect(page.locator('.hero-stage')).not.toHaveClass(/is-pinned/);
+  const end = await page.locator('.hero-stage').evaluate(el => el.offsetTop + el.offsetHeight * .75);
+  await jump(page, end);
+  await expect.poll(() => heroScale(page)).toBeCloseTo(.94, 2);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await jump(page, 0);
+  await expect.poll(() => heroScale(page)).toBeCloseTo(1, 2);
+  await page.getByRole('button', { name: 'Abrir menu' }).click();
+  await expect(page.locator('#navigation')).toBeInViewport();
+  await page.locator('#navigation a[href="#sobre"]').click();
+  await expect(page.locator('#navigation')).not.toHaveClass(/is-open/);
+  await expect(page.locator('#sobre')).toBeInViewport();
+});
+
 test('desktop scroll moves projects horizontally and releases the following section', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -74,6 +120,8 @@ test('pause persists and disables liquid and pinned motion', async ({ page }) =>
   await openSite(page);
   await page.getByRole('button', { name: 'Pausar efeitos' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
+  await expect(page.locator('.hero-stage')).not.toHaveClass(/is-pinned/);
+  await expect(page.locator('.hero-surface')).toHaveCSS('transform', 'none');
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
   await page.reload();
   await expect(page.getByRole('button', { name: 'Ativar efeitos' })).toBeVisible();
@@ -87,13 +135,19 @@ test('reduced-motion keeps all content and gallery controls usable, including li
   await openSite(page);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
   await expect(page.getByRole('button', { name: 'Movimento reduzido' })).toBeDisabled();
+  await expect(page.locator('.hero-stage')).not.toHaveClass(/is-pinned/);
+  await jump(page, 300);
+  expect(await heroScale(page)).toBeCloseTo(1, 2);
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
   await expect(page.locator('.amp')).toHaveCSS('filter', 'none');
   await page.getByRole('button', { name: 'Próximo projeto' }).click();
   await expect(page.locator('.project-counter')).toHaveText('02 / 07');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(page.locator('.hero-stage')).toHaveClass(/is-pinned/);
   await expect(page.locator('#projetos')).toHaveClass(/is-pinned/);
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.locator('.hero-stage')).not.toHaveClass(/is-pinned/);
+  await expect(page.locator('.hero-surface')).toHaveCSS('transform', 'none');
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
 });
 

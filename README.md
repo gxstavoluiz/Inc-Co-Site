@@ -50,9 +50,10 @@ Novos commits enviados à branch `main` publicam o site automaticamente. A publi
 ## Animações e galeria horizontal
 
 - `src/motion.js` e `src/motion.css` implementam entradas em escala, resposta dos botões e cards e distorção líquida do símbolo `&` com um filtro SVG.
+- A Hero inteira reduz de 100% para 82% durante a rolagem em desktops com altura suficiente, permanecendo brevemente fixa e revelando bordas arredondadas. Ao voltar, recupera o tamanho original. No celular ou em janelas baixas, a redução é de apenas 6%, sem fixação. O cálculo usa um contêiner estável para evitar saltos e acompanha redimensionamentos.
 - Em desktop com espaço vertical suficiente, a seção de projetos fica fixa enquanto a rolagem vertical percorre os cards horizontalmente. No mobile, em janelas baixas ou com animações pausadas, usa rolagem horizontal nativa, toque e botões de navegação.
 - A galeria aceita as teclas esquerda/direita, Home e End. Filtros recalculam a distância; um único projeto remove a fixação.
-- O botão **Pausar efeitos** guarda a preferência localmente. `prefers-reduced-motion` desativa distorção, entradas e fixação da galeria. O efeito líquido interrompe o processamento quando estabiliza, sai da tela ou a aba fica oculta.
+- O botão **Pausar efeitos** guarda a preferência localmente. `prefers-reduced-motion` desativa distorção, entradas, redução da Hero e fixação da galeria. O efeito líquido interrompe o processamento quando estabiliza, sai da tela ou a aba fica oculta.
 - A referência externa `landonorris.com` não pôde ser inspecionada neste ambiente (HTTP 403). Os efeitos foram desenvolvidos a partir dos comportamentos solicitados, com a identidade visual própria da Inc&Co.
 
 ### Testes de interação
