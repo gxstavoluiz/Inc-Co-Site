@@ -4,6 +4,7 @@ import '@fontsource/ibm-plex-sans/latin-500.css';
 import './design-system.css';
 import './motion.css';
 import { initMotion } from './motion.js';
+import { projects } from './projects.js';
 
 const menu = document.querySelector('.menu');
 const navigation = document.querySelector('#navigation');
@@ -32,9 +33,27 @@ document.addEventListener('keydown', event => {
 });
 window.matchMedia('(min-width: 768px)').addEventListener('change', event => { if (event.matches) setMenu(false); });
 document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { document.querySelectorAll('[data-filter]').forEach(b => { b.classList.toggle('active', b === button); b.setAttribute('aria-pressed', String(b === button)); }); document.querySelectorAll('.project').forEach(card => { card.hidden = button.dataset.filter !== 'all' && card.dataset.category !== button.dataset.filter; }); }));
-const projects = [{title:'Terra — de volta à essência',description:'Um estudo de marca sobre o essencial. Tipografia orgânica, tons naturais e um posicionamento que aproxima pessoas e natureza. O conceito explora estratégia de marca, identidade visual e aplicações editoriais.'},{title:'Move — o futuro em movimento',description:'Uma exploração de identidade para uma nova forma de se mover. Tipografia expressiva e um sistema visual dinâmico se encontram em uma experiência digital direta, intuitiva e cheia de personalidade.'}];
 const dialog = document.querySelector('dialog');
-document.querySelectorAll('[data-project]').forEach(card => card.addEventListener('click', () => {const project = projects[card.dataset.project]; document.querySelector('#project-title').textContent = project.title; document.querySelector('#project-description').textContent = project.description; dialog.showModal();}));
+document.querySelectorAll('[data-project]').forEach(card => card.addEventListener('click', () => {
+  const project = projects[Number(card.dataset.project)];
+  document.querySelector('#project-title').textContent = project.name;
+  document.querySelector('#project-description').textContent = project.description;
+  document.querySelector('#project-segment').textContent = `${project.segment} / INC&CO`;
+  const logo = document.querySelector('#project-logo');
+  logo.src = `${import.meta.env.BASE_URL}logos/${project.logo}`;
+  logo.alt = `Logo ${project.name}`;
+  const details = document.querySelector('#project-details');
+  details.replaceChildren();
+  for (const [heading, text] of project.details ?? []) {
+    const term = document.createElement('dt');
+    const description = document.createElement('dd');
+    term.textContent = heading;
+    description.textContent = text;
+    details.append(term, description);
+  }
+  dialog.showModal();
+  dialog.scrollTop = 0;
+}));
 document.querySelector('.close-dialog').addEventListener('click', () => dialog.close());
 document.querySelector('#dialog-cta').addEventListener('click', () => dialog.close());
 dialog.addEventListener('click', event => {if(event.target === dialog) { const r=dialog.getBoundingClientRect(); if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) dialog.close(); }});

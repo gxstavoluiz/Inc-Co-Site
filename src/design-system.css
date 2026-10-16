@@ -143,3 +143,36 @@ dialog::backdrop { backdrop-filter: none; }
   .footer-brand, .footer-contact { grid-column: 1 / -1; }
   .footer-bottom { font-size: 10px; }
 }
+/* Portfólio da apresentação Inc&Co — abril de 2026. */
+.hero-copy h1 { font-size: clamp(42px, 4.7vw, 66px); }
+.hero-copy h1 > span { white-space: normal; }
+.hero-copy { min-width: 0; }
+.filters { flex-wrap: wrap; }
+.project-image.client-art { background: #f9ff00; color: #000; display: grid; place-items: center; }
+.client-logo { width: 62%; height: 53%; object-fit: contain; filter: brightness(0); pointer-events: none; }
+.client-logo--ayo, .client-logo--nonnas, .client-logo--ibam { width: 48%; height: 55%; }
+.project-caption h3 { line-height: 1.4; }
+.project-caption > span { line-height: 1.5; }
+.project-open { font-family: Arial, sans-serif; }
+.dialog-logo-panel { background: #f9ff00; border-radius: 8px; margin-top: 24px; height: 160px; display: grid; place-items: center; }
+#project-logo { width: 70%; max-width: 320px; height: 120px; object-fit: contain; filter: brightness(0); }
+#project-dialog { max-width: 760px; max-height: calc(100dvh - 48px); }
+#project-dialog .eyebrow { padding-right: 28px; line-height: 1.5; }
+#project-details { margin: 0 0 32px; }
+#project-details:empty { display: none; }
+#project-details dt { color: var(--yellow); font-size: 15px; margin-top: 24px; }
+#project-details dd { color: #b3bcc4; font-size: 14px; line-height: 1.8; margin: 8px 0 0; }
+.footer-contact address { font-size: 12px; font-style: normal; line-height: 1.7; color: #586270; margin-bottom: 24px; }
+@media (max-width: 1100px) {
+  .projects .section-heading { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .projects .filters { margin-top: 0; }
+}
+@media (max-width: 767px) {
+  .hero-copy h1 { font-size: clamp(33px, 8.7vw, 58px); }
+  .projects .filters { margin-top: 20px; gap: 6px; }
+  .projects .filters button { padding: 10px 13px; font-size: 12px; }
+  .client-logo { width: 75%; height: 52%; }
+  .client-logo--ayo, .client-logo--nonnas, .client-logo--ibam { width: 62%; }
+  .projects .project-caption h3 { font-size: 14px; }
+  .projects .project-caption > span { font-size: 11px; }
+}

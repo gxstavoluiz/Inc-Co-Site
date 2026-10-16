@@ -27,7 +27,8 @@ Publique a pasta `dist` em uma hospedagem estática.
 - `src/design-system.css`: aplicação dos tokens do `DESIGN.md`, com amarelo Inc&Co `#F9FF00`, fundo `#0B0E11`, superfícies `#1E2329`, espaçamento de 80 px e rodapé claro.
 - A pilha BinanceNova/BinancePlex usa Inter e IBM Plex Sans como alternativas locais, conforme o documento. Os arquivos licenciados da Binance não estão incluídos.
 - `src/main.js`: menu mobile, filtros, diálogos e preparação de contato por e-mail.
-- Terra e Move são estudos conceituais, identificados na interface.
+- Conteúdo institucional e portfólio adaptados de `Inc&Co_Apr2026.pdf`, fornecido pelo usuário. Os sete logos da página 5 estão em `public/logos/`. Os três cases detalhados estão em `src/projects.js`; os demais clientes exibem apenas identificação e segmento.
+- Os pilares são Branding, Audiovisual, Sports e Public. A experiência de mais de 20 anos refere-se à soma da equipe.
 - O formulário prepara uma mensagem no aplicativo de e-mail e não envia dados a um servidor. O destinatário é `agenciaavengers@hotmail.com`, configurado no `mailto:` de `src/main.js`. O visitante revisa e envia a mensagem no próprio aplicativo de e-mail.
 
 ## Validação

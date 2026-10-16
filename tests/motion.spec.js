@@ -39,12 +39,12 @@ test('gallery arrows, project dialog, filters and keyboard navigation work toget
   const bounds = await galleryBounds(page);
   await jump(page, bounds.top);
   await page.getByRole('button', { name: 'Próximo projeto' }).click();
-  await expect(page.locator('.project-counter')).toHaveText('02 / 02');
+  await expect(page.locator('.project-counter')).toHaveText('02 / 07');
   await page.locator('[data-project="1"]').click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.locator('#project-title')).toContainText('Move');
+  await expect(page.locator('#project-title')).toContainText('Robinho Jr.');
   await page.keyboard.press('Escape');
-  await page.getByRole('button', { name: 'Branding', exact: true }).click();
+  await page.getByRole('button', { name: 'Saúde', exact: true }).click();
   await expect(page.locator('.project:visible')).toHaveCount(1);
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
   await expect(page.locator('.project-next')).toBeDisabled();
@@ -53,7 +53,7 @@ test('gallery arrows, project dialog, filters and keyboard navigation work toget
   await expect(page.locator('#projetos')).toHaveClass(/is-pinned/);
   await page.locator('.project-viewport').focus();
   await page.keyboard.press('End');
-  await expect(page.locator('.project-counter')).toHaveText('02 / 02');
+  await expect(page.locator('.project-counter')).toHaveText('07 / 07');
 });
 
 test('hero reacts to pointer with real liquid displacement then settles', async ({ page }) => {
@@ -86,7 +86,7 @@ test('reduced-motion keeps all content and gallery controls usable, including li
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
   await expect(page.locator('.amp')).toHaveCSS('filter', 'none');
   await page.getByRole('button', { name: 'Próximo projeto' }).click();
-  await expect(page.locator('.project-counter')).toHaveText('02 / 02');
+  await expect(page.locator('.project-counter')).toHaveText('02 / 07');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect(page.locator('#projetos')).toHaveClass(/is-pinned/);
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -101,7 +101,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     if (width <= 900) {
       await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
       await page.getByRole('button', { name: 'Próximo projeto' }).click();
-      await expect(page.locator('.project-counter')).toHaveText('02 / 02');
+      await expect(page.locator('.project-counter')).toHaveText('02 / 07');
       await expect.poll(() => page.locator('.project-viewport').evaluate(el => el.scrollLeft)).toBeGreaterThan(20);
       await page.locator('[data-project="1"]').click();
       await expect(page.getByRole('dialog')).toBeVisible();
@@ -128,6 +128,6 @@ test('without JavaScript all projects remain available by native horizontal scro
   await page.goto('http://127.0.0.1:4175/Inc-Co-Site/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.locator('#projetos')).not.toHaveClass(/is-pinned/);
-  await expect(page.locator('.project')).toHaveCount(2);
+  await expect(page.locator('.project')).toHaveCount(7);
   await context.close();
 });
