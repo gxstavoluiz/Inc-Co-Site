@@ -45,3 +45,26 @@ O caminho base `/Inc-Co-Site/` é definido em `vite.config.js` e também é usad
 4. Aguarde os jobs `build` e `deploy` terminarem com sucesso. O link público aparecerá em **Settings → Pages**.
 
 Novos commits enviados à branch `main` publicam o site automaticamente. A publicação inclui apenas o conteúdo de `dist`, não o código-fonte nem o documento de design. O formulário continua abrindo o aplicativo de e-mail do visitante; não requer servidor ou segredo.
+
+## Animações e galeria horizontal
+
+- `src/motion.js` e `src/motion.css` implementam entradas em escala, resposta dos botões e cards e distorção líquida do símbolo `&` com um filtro SVG.
+- Em desktop com espaço vertical suficiente, a seção de projetos fica fixa enquanto a rolagem vertical percorre os cards horizontalmente. No mobile, em janelas baixas ou com animações pausadas, usa rolagem horizontal nativa, toque e botões de navegação.
+- A galeria aceita as teclas esquerda/direita, Home e End. Filtros recalculam a distância; um único projeto remove a fixação.
+- O botão **Pausar efeitos** guarda a preferência localmente. `prefers-reduced-motion` desativa distorção, entradas e fixação da galeria. O efeito líquido interrompe o processamento quando estabiliza, sai da tela ou a aba fica oculta.
+- A referência externa `landonorris.com` não pôde ser inspecionada neste ambiente (HTTP 403). Os efeitos foram desenvolvidos a partir dos comportamentos solicitados, com a identidade visual própria da Inc&Co.
+
+### Testes de interação
+
+```sh
+npx playwright install chromium
+npm test
+```
+
+Para usar o Chromium já instalado no ambiente:
+
+```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm test
+```
+
+O workflow de publicação executa o build e os testes de navegador antes de disponibilizar o artefato ao GitHub Pages.

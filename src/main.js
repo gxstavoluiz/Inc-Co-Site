@@ -2,6 +2,8 @@ import '@fontsource-variable/inter';
 import '@fontsource/ibm-plex-sans/latin-400.css';
 import '@fontsource/ibm-plex-sans/latin-500.css';
 import './design-system.css';
+import './motion.css';
+import { initMotion } from './motion.js';
 
 const menu = document.querySelector('.menu');
 const navigation = document.querySelector('#navigation');
@@ -38,3 +40,4 @@ document.querySelector('#dialog-cta').addEventListener('click', () => dialog.clo
 dialog.addEventListener('click', event => {if(event.target === dialog) { const r=dialog.getBoundingClientRect(); if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) dialog.close(); }});
 document.querySelector('#contact-form').addEventListener('submit', event => {event.preventDefault();const data=new FormData(event.target); const subject=encodeURIComponent(`Novo projeto — ${data.get('name')}`);const body=encodeURIComponent(`Olá, Inc&Co!\n\n${data.get('message')}\n\n${data.get('name')}\n${data.get('email')}`);const link=document.createElement('a');link.href=`mailto:agenciaavengers@hotmail.com?subject=${subject}&body=${body}`;link.click();document.querySelector('#form-status').textContent='Mensagem preparada para agenciaavengers@hotmail.com. Revise e envie no seu aplicativo de e-mail.';});
 document.querySelector('#year').textContent=new Date().getFullYear();
+initMotion();
